@@ -14,12 +14,15 @@
 
 """Module to clean installers
 """
-import chef
 import logging
 import xmlrpclib
 
 from compass.actions import util
 
+try:
+    import chef
+except ImportError:
+    pass
 
 class CobblerInstaller(object):
     """cobbler installer"""

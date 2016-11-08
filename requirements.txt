@@ -1,3 +1,22 @@
+amqplib
+argparse
 celery
-setuptools
+Markdown<2.5
+Cheetah<=2.4.1
+Flask
+Flask-Login<=0.3.2
+Flask-RESTful
+Flask-Script
+Flask-SQLAlchemy
+Flask-WTF
+itsdangerous
+importlib
+lazypy
+lockfile
+netaddr
+# MySQL-python
+paramiko
+SQLAlchemy>=0.9.0
+simplejson
+requests
 redis
