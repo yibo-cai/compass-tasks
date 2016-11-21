@@ -27,8 +27,7 @@ RUN easy_install --upgrade pip && \
 RUN mkdir -p /etc/compass/ && \
     mkdir -p /etc/compass/machine_list && \
     mkdir -p /etc/compass/switch_list && \
-    cp /root/compass-tasks/conf/celeryconfig /etc/compass/ && \
-    cp /root/compass-tasks/conf/setting /etc/compass/ && \
+    cp -rf /root/compass-tasks/conf/* /etc/compass/ && \
     cd /root/compass-tasks && \
     python setup.py install
 
