@@ -20,4 +20,4 @@ SQLAlchemy>=0.9.0
 simplejson
 requests
 redis
-ansible
+ansible==1.9.4

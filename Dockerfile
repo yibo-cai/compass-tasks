@@ -8,7 +8,7 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.
     yum update -y
 
 # packages
-RUN yum --enablerepo=compass_install --nogpgcheck install -y python python-devel git amqp python-pip libffi-devel openssl-devel gcc python-setuptools MySQL-python supervisor redis
+RUN yum --enablerepo=compass_install --nogpgcheck install -y python python-devel git amqp python-pip libffi-devel openssl-devel gcc python-setuptools MySQL-python supervisor redis sshpass python-keyczar
 
 # code
 RUN mkdir -p /root/compass-tasks
@@ -33,6 +33,8 @@ RUN mkdir -p /etc/compass/ && \
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY start.sh /usr/local/bin/start.sh
+RUN mkdir -p /var/log/compass
+RUN git clone https://github.com/openstack-ansible/openstack-ansible-modules /opt/openstack-ansible-modules
 EXPOSE 6379
 VOLUME ["/var/ansible", "/etc/compass/machine_list", "/etc/compass/switch_list"]
 ENTRYPOINT ["/bin/bash", "-c"]
