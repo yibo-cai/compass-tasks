@@ -90,7 +90,7 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     # data
-    data_files=DATA_FILES,
+    # data_files=DATA_FILES,
     # test,
     tests_require=['tox'],
     cmdclass={'test': Tox},

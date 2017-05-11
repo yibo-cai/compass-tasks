@@ -15,7 +15,7 @@ RUN mkdir -p /root/compass-tasks
 COPY . /root/compass-tasks
 RUN mkdir -p /root/compass-tasks/compass && \
     touch /root/compass-tasks/compass/__init__.py && \
-    mv /root/compass-tasks/{actions,tasks,utils,deployment,db,hdsdiscovery,log_analyzor} /root/compass-tasks/compass/
+    mv /root/compass-tasks/{actions,apiclient,tasks,utils,deployment,db,hdsdiscovery,log_analyzor} /root/compass-tasks/compass/
 
 # pip
 RUN easy_install --upgrade pip && \
