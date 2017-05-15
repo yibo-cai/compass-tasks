@@ -14,8 +14,15 @@ RUN yum --enablerepo=compass_install --nogpgcheck install -y python python-devel
 RUN mkdir -p /root/compass-tasks
 COPY . /root/compass-tasks
 RUN mkdir -p /root/compass-tasks/compass && \
-    touch /root/compass-tasks/compass/__init__.py && \
-    mv /root/compass-tasks/{actions,apiclient,tasks,utils,deployment,db,hdsdiscovery,log_analyzor} /root/compass-tasks/compass/
+    touch /root/compass-tasks/compass/__init__.py
+RUN mv /root/compass-tasks/actions /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/apiclient /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/tasks /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/utils /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/deployment /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/db /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/hdsdiscovery /root/compass-tasks/compass/ && \
+RUN mv /root/compass-tasks/log_analyzor /root/compass-tasks/compass/
 
 # pip
 RUN easy_install --upgrade pip && \
