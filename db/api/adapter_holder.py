@@ -121,7 +121,6 @@ def get_adapter(adapter_id, user=None, session=None, **kwargs):
     """get adapter."""
     load_adapters()
     if adapter_id not in ADAPTER_MAPPING:
-        logging.info("====adapter mapping is %s", ADAPTER_MAPPING)
         raise exception.RecordNotExists(
             'adpater %s does not exist' % adapter_id
         )
