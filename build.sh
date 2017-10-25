@@ -14,7 +14,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sed -i 's/^mirrorlist=https/mirrorlist=http/g' /etc/yum.repos.d/epel.repo
 yum update -y
 
-yum --nogpgcheck install -y python python-devel git amqp python-pip libffi-devel openssl-devel gcc python-setuptools MySQL-python supervisor redis sshpass python-keyczar vim ansible-2.2.1.0
+yum --nogpgcheck install -y python python-devel git amqp python-pip libffi-devel openssl-devel gcc python-setuptools MySQL-python supervisor redis sshpass python-keyczar vim ansible-2.2.1.0 libyaml-devel make
 
 mkdir -p $COMPASS_DIR/compass
 touch $COMPASS_DIR/compass/__init__.py
