@@ -56,6 +56,8 @@ class AnsibleInstaller(PKInstaller):
     LOG_FILE = 'ansible_log_file'
     ANSIBLE_CONFIG = 'ansible_config'
     INVENTORY = 'inventory_file'
+    INVENTORY_JSON = 'inventory_json_file'
+    INVENTORY_GROUP = 'inventory_group'
     GROUP_VARIABLE = 'group_variable'
     HOSTS_PATH = 'etc_hosts_path'
     RUNNER_DIRS = 'runner_dirs'
@@ -78,6 +80,8 @@ class AnsibleInstaller(PKInstaller):
             settings.setdefault(self.ANSIBLE_CONFIG, None)
         )
         self.inventory = settings.setdefault(self.INVENTORY, None)
+        self.inventory_json = settings.setdefault(self.INVENTORY_JSON, None)
+        self.inventory_group = settings.setdefault(self.INVENTORY_GROUP, None)
         self.group_variable = (
             settings.setdefault(self.GROUP_VARIABLE, None)
         )
@@ -106,6 +110,32 @@ class AnsibleInstaller(PKInstaller):
     def __repr__(self):
         return '%s[name=%s,installer_url=%s]' % (
             self.__class__.__name__, self.NAME, self.installer_url)
+
+    def dump_inventory(self, data, inventory):
+        with open(inventory, "w") as f:
+            json.dump(data, f, indent=4)
+
+    def _generate_inventory_data(self, global_vars_dict):
+        vars_dict = global_vars_dict['roles_mapping']
+        inventory_data = {}
+        inventory_data['_meta'] = {'hostvars': {}}
+        for item in self.inventory_group:
+            if item in vars_dict:
+                inventory_data[item] = {'hosts': []}
+                for host in vars_dict[item]:
+                    hostname = host['hostname']
+                    if hostname not in inventory_data['_meta']['hostvars']:
+                        host_dict = {}
+                        host_dict['ansible_ssh_host'] = host['install']['ip']
+                        host_dict['ansible_ssh_user'] = 'root'
+                        host_dict['ansible_ssh_pass'] = 'root'
+                        inventory_data['_meta']['hostvars'].update(
+                            {hostname: host_dict})
+                    inventory_data[item]['hosts'].append(hostname)
+
+        inventory_data['ceph'] = {'children':
+                                 ['ceph_adm', 'ceph_mon', 'ceph_osd']}
+        return inventory_data
 
     def generate_installer_config(self):
         """Render ansible config file by OS installing.
@@ -194,9 +224,11 @@ class AnsibleInstaller(PKInstaller):
                 "Inventory template '%s' does not exist", self.tmpl_name
             )
             raise Exception("Template '%s' does not exist!" % self.tmpl_name)
-
+        inventory_dir = os.path.join(global_vars_dict['run_dir'], 'inventories')
+        inventory_json = os.path.join(inventory_dir, self.inventory_json)
+        vars_dict = {'inventory_json': inventory_json}
         return self.get_config_from_template(
-            inventory_tmpl_path, global_vars_dict
+            inventory_tmpl_path, vars_dict
         )
 
     def _generate_group_vars_attributes(self, global_vars_dict):
@@ -290,6 +322,8 @@ class AnsibleInstaller(PKInstaller):
         if os.path.exists(ansible_run_destination):
             ansible_run_destination += "-expansion"
         self._create_ansible_run_env(env_name, ansible_run_destination)
+        global_vars_dict.update({'run_dir': ansible_run_destination})
+
         inv_config = self._generate_inventory_attributes(global_vars_dict)
         inventory_dir = os.path.join(ansible_run_destination, 'inventories')
 
@@ -307,11 +341,16 @@ class AnsibleInstaller(PKInstaller):
             self.ansible_config
         )
 
+        inventory_data = self._generate_inventory_data(global_vars_dict)
+        inventory_json_destination = os.path.join(inventory_dir,
+                                                  self.inventory_json)
+
         os.mkdir(inventory_dir)
         os.mkdir(vars_dir)
 
         inventory_destination = os.path.join(inventory_dir, self.inventory)
         group_vars_destination = os.path.join(vars_dir, self.group_variable)
+        self.dump_inventory(inventory_data, inventory_json_destination)
         self.serialize_config(inv_config, inventory_destination)
         self.serialize_config(vars_config, group_vars_destination)
         self.serialize_config(hosts_config, hosts_destination)
@@ -394,6 +433,7 @@ class AnsibleInstaller(PKInstaller):
         config_file = os.path.join(
             ansible_run_destination, self.ansible_config
         )
+	os.system("chmod +x %s" % inventory_file)
         cmd = "ANSIBLE_CONFIG=%s ansible-playbook -i %s %s" % (config_file,
                                                                inventory_file,
                                                                playbook_file)
