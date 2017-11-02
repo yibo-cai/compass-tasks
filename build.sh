@@ -18,7 +18,7 @@ yum --nogpgcheck install -y python python-devel git amqp python-pip libffi-devel
 
 mkdir -p $COMPASS_DIR/compass
 touch $COMPASS_DIR/compass/__init__.py
-mv $COMPASS_DIR/{actions,apiclient,tasks,utils,deployment,db,hdsdiscovery,log_analyzor} \
+cp -a $COMPASS_DIR/{actions,apiclient,tasks,utils,deployment,db,hdsdiscovery,log_analyzor} \
 $COMPASS_DIR/compass/
 
 easy_install --upgrade pip
